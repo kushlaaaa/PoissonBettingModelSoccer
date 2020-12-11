@@ -1,0 +1,107 @@
+
+```{r}
+library(tidyverse)
+
+```
+
+
+```{r}
+
+data <- read_csv("KCO_Income_Data.csv")
+
+
+Goals <- data %>% select(c(League, Week, Home, Away, KCO_Goals, NetIncomeGoals, TotalBetGoals))
+Goals <- Goals %>% filter(KCO_Goals > 2)
+Goals$Positive <- ifelse(Goals$NetIncomeGoals > 0, 1, 0)
+GoalsLeague <- Goals %>% group_by(League) %>% summarise(NetIncome = sum(NetIncomeGoals), Win = sum(Positive))
+
+xG <- data %>% select(c(League, Week, Home, Away, KCO_xG, NetIncomexG, TotalBetxG))
+xG <- xG %>% filter(KCO_xG > 2)
+xG$Positive <- ifelse(xG$NetIncomexG > 0, 1, 0)
+xGLeague <- xG %>% group_by(League) %>% summarise(NetIncome = sum(NetIncomexG), Win = sum(Positive), )
+
+Reg <- data %>% select(c(League, Week, Home, Away, KCO_Reg, NetIncomeReg, TotalBetReg))
+Reg <- Reg %>% filter(KCO_Reg > 2)
+Reg$Positive <- ifelse(Reg$NetIncomeReg > 0, 1, 0)
+regLeague <- Reg %>% group_by(League) %>% summarise(NetIncome = sum(NetIncomeReg), Win = sum(Positive))
+
+RF <- data %>% select(c(League, Week, Home, Away,KCO_RF, NetIncomeRF, TotalBetRF))
+RF <- RF %>% filter(KCO_RF > 2)
+RF$Positive <- ifelse(RF$NetIncomeRF > 0, 1, 0)
+RFLeague <- RF %>% group_by(League) %>% summarise(NetIncome = sum(NetIncomeRF), Win = sum(Positive), Max = max(NetIncomeRF), BetAmount = sum(TotalBetRF))
+
+sum(GoalsLeague$NetIncome)
+sum(xGLeague$NetIncome)
+sum(regLeague$NetIncome)
+sum(RFLeague$NetIncome)
+
+sum(GoalsLeague$Win)
+sum(xGLeague$Win)
+sum(regLeague$Win)
+sum(RFLeague$Win)
+
+sum(GoalsLeague$Win)/nrow(Goals)
+sum(xGLeague$Win)/nrow(xG)
+sum(regLeague$Win)/nrow(Reg)
+sum(RFLeague$Win)/nrow(RF)
+
+
+sum(GoalsLeague$Max)
+sum(xGLeague$Max)
+sum(regLeague$Max)
+sum(RFLeague$Max)
+
+
+sum(Goals$NetIncomeGoals)
+sum(xG$NetIncomexG)
+sum(Reg$NetIncomeReg)
+sum(RF$NetIncomeRF)
+
+
+max(Goals$NetIncomeGoals)
+max(xG$NetIncomexG)
+max(Reg$NetIncomeReg)
+max(RF$NetIncomeRF)
+
+
+which.max(Goals$NetIncomeGoals)
+which.max(xG$NetIncomexG)
+which.max(Reg$NetIncomeReg)
+which.max(RF$NetIncomeRF)
+
+```
+```{r}
+data <- read_csv("KCO_Income_Data.csv")
+
+RF <- data %>% select(c(League, Week, Home, Away,KCO_RF, NetIncomeRF, TotalBetRF))
+
+
+RF$Positive <- ifelse(RF$NetIncomeRF > 0, 1, 0)
+RF <- RF %>% filter(Week > 13)
+RF <- RF %>% filter(KCO_RF > 2.1)
+
+RFLeague <- RF %>% group_by(League) %>% summarise(NetIncome = sum(NetIncomeRF), Win = sum(Positive), Max = max(NetIncomeRF), BetAmount = sum(TotalBetRF), ProfitPercent = (sum(NetIncomeRF)/sum(BetAmount)), Bets = n(), WinPercent = (sum(Positive)/n()))
+
+RFLeague
+mean(RFLeague$ProfitPercent)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

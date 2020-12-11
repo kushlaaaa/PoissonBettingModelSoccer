@@ -1,0 +1,46 @@
+
+```{r}
+library(tidyverse)
+library(lattice)
+library(scales) # for muted function
+library(wesanderson)
+
+
+data <- read_csv("ScoreMatrix_2.csv")
+
+matrix <- ggplot(data, aes(HomeGoals, AwayGoals)) + geom_tile(aes(fill = Value)) +  geom_text(aes(fill = data$Value, label = round(data$Value, 5))) + scale_fill_gradient(low = "lightgoldenrod1", high = "firebrick2") + 
+  theme(panel.grid.major.x=element_blank(), 
+        panel.grid.minor.x=element_blank(), 
+        panel.grid.major.y=element_blank(), 
+        panel.grid.minor.y=element_blank(),
+        panel.background=element_rect(fill="white"), 
+        axis.text.x = element_text(angle=90, hjust = 1,vjust=1,size = 12,face = "bold"), 
+        plot.title = element_text(size=20,face="bold"),
+        axis.text.y = element_text(size = 12,face = "bold")) + 
+  ggtitle("Score Line Matrix (Rounded to 5dp)") + theme(legend.title=element_text(face="bold", size=14)) + labs(fill="Score Line Probability") + scale_x_continuous(name = "Home Goals", breaks = seq(0,5,1)) + 
+  scale_y_continuous(name = "Away Goals", breaks = seq(0,5,1))
+
+matrix
+
+ggsave("ScoreLineMatrx.pdf", matrix, width = 10, height=7)
+####
+ggplot(data, aes(HomeGoals, AwayGoals)) + 
+  geom_tile(aes(fill = Value)) + 
+  geom_text(aes(fill = data$Value, label = round(data$Value, 5))) + 
+  scale_fill_gradient(low = "thistle2", high = "purple") + 
+  theme(panel.grid.major.x=element_blank(), 
+        panel.grid.minor.x=element_blank(), 
+        panel.grid.major.y=element_blank(), 
+        panel.grid.minor.y=element_blank(),
+        panel.background=element_rect(fill="white"), 
+        axis.text.x = element_text(angle=90, hjust = 1,vjust=1,size = 12,face = "bold"), 
+        plot.title = element_text(size=20,face="bold"),
+        axis.text.y = element_text(size = 12,face = "bold")) + 
+  ggtitle("Scoreline Matrix (Rounded to 5dp)") + theme(legend.title=element_text(face="bold", size=14)) + labs(fill="Scoreline Probability") + scale_x_continuous(name = "Home Goals", breaks = seq(0,5,1)) + 
+  scale_y_continuous(name = "Away Goals", breaks = seq(0,5,1))
+
+```
+
+
+
+

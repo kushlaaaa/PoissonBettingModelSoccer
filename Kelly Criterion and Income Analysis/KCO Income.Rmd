@@ -1,0 +1,26 @@
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+data <- read_csv("KCO_Data.csv")
+
+data$TotalBetGoals <- data$HomeBetGoals + data$AwayBetGoals + data$DrawBetGoals
+data$TotalBetxG <- data$HomeBetxG + data$AwayBetxG + data$DrawBetxG
+data$TotalBetReg <- data$HomeBetReg + data$AwayBetReg + data$DrawBetReg
+data$TotalBetRF <- data$HomeBetRF + data$AwayBetRF + data$DrawBetRF
+
+
+data$NetIncomeGoals <- ifelse(data$HomeWin==1, ((data$HomeOdds * data$HomeBetGoals)-data$TotalBetGoals), ifelse(data$AwayWin==1, ((data$AwayOdds * data$AwayBetGoals)-data$TotalBetGoals), ((data$DrawOdds * data$DrawBetGoals)-data$TotalBetGoals)))
+
+data$NetIncomexG <- ifelse(data$HomeWin==1, ((data$HomeOdds * data$HomeBetxG)-data$TotalBetxG), ifelse(data$AwayWin==1, ((data$AwayOdds * data$AwayBetxG)-data$TotalBetxG), ((data$DrawOdds * data$DrawBetxG)-data$TotalBetxG)))
+
+data$NetIncomeReg <- ifelse(data$HomeWin==1, ((data$HomeOdds * data$HomeBetReg)-data$TotalBetReg), ifelse(data$AwayWin==1, ((data$AwayOdds * data$AwayBetReg)-data$TotalBetReg), ((data$DrawOdds * data$DrawBetReg)-data$TotalBetReg)))
+
+data$NetIncomeRF <- ifelse(data$HomeWin==1, ((data$HomeOdds * data$HomeBetRF)-data$TotalBetRF), ifelse(data$AwayWin==1, ((data$AwayOdds * data$AwayBetRF)-data$TotalBetRF), ((data$DrawOdds * data$DrawBetRF)-data$TotalBetRF)))
+
+write_csv(data, "KCO_Income_Data.csv")
+```
+

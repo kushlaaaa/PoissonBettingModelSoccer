@@ -1,0 +1,49 @@
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(ggpubr)
+
+```
+
+```{r}
+data <- read.csv("AllProbabilities.csv") 
+data$GoalTotalProb <- data$HomeWinProbGoal + data$AwayWinProbGoal + data$DrawProbGoal
+data$xGTotalProb <- data$HomeWinProbxG + data$AwayWinProbxG + data$DrawProbxG
+data$RegTotalProb <- data$HomeWinProbReg + data$AwayWinProbReg + data$DrawProbReg
+data$RFTotalProb <- data$HomeWinProbRF + data$AwayWinProbRF + data$DrawProbRF
+
+
+GoalProbDensity <- data %>% ggplot( aes(x=GoalTotalProb)) + 
+  geom_density(fill = "mediumpurple", colour = "black", alpha = 0.6, lwd = 1) + 
+  scale_x_continuous(name = "Probability Sum", breaks = seq(0,1,0.1),limits = c(0,1)) + 
+  scale_y_continuous(name = "Count") + ggtitle("Probability Sum from Goals Model")+
+  theme_bw()
+GoalProbDensity
+
+xGProbDensity <- data %>% ggplot( aes(x=xGTotalProb)) + 
+  geom_density(fill = "green", colour = "black", alpha = 0.6, lwd = 1) + 
+  scale_x_continuous(name = "Probability Sum", breaks = seq(0,1,0.1),limits = c(0,1)) + 
+  scale_y_continuous(name = "Count") + ggtitle("Probability Sum from xG Model")+
+  theme_bw()
+xGProbDensity
+
+RegProbDensity <- data %>% ggplot( aes(x=RegTotalProb)) + 
+  geom_density(fill = "cyan", colour = "black", alpha = 0.6, lwd = 1) + 
+  scale_x_continuous(name = "Probability Sum", breaks = seq(0,1,0.1),limits = c(0,1)) + 
+  scale_y_continuous(name = "Count") + ggtitle("Probability Sum from Reg Model")+
+  theme_bw()
+RegProbDensity
+
+RFProbDensity <- data %>% ggplot( aes(x=RFTotalProb)) + 
+  geom_density(fill = "orange", colour = "black", alpha = 0.6, lwd = 1) + 
+  scale_x_continuous(name = "Probability Sum", breaks = seq(0,1,0.1),limits = c(0,1)) + 
+  scale_y_continuous(name = "Count") + ggtitle("Probability Sum from RF Model")+
+  theme_bw()
+RFProbDensity
+
+TotalProb <- ggarrange(GoalProbDensity, xGProbDensity, RegProbDensity, RFProbDensity, ncol=2, nrow=2)
+TotalProb
+
+ggsave("TotalProb.jpeg", TotalProb)
+```
+

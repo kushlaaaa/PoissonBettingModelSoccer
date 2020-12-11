@@ -1,0 +1,143 @@
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+KCO <- function( homeOdds, awayOdds, drawOdds, homePercent, awayPercent, drawPercent){
+bets = c(0,0,0)
+numberFind <- function(bets) {
+  ifHome <- 100 + bets[1] * homeOdds - sum(bets)
+  ifAway <- 100 + bets[2] * awayOdds - sum(bets)
+  ifDraw <- 100 + bets[3] * drawOdds - sum(bets)
+  logHome <- log10(ifHome)
+  logAway <- log10(ifAway)
+  logDraw <- log10(ifDraw)
+  finalHome <- homePercent * logHome
+  finalAway <- awayPercent * logAway
+  finalDraw <- drawPercent * logDraw
+    if(sum(bets) > 99.99){
+  return(0)
+  }
+  return(-(finalHome + finalAway + finalDraw))
+}
+return(optim(par=c(0,0,0),numberFind, method='L-BFGS-B', lower= c(0,0,0), upper=c(100,100,100))$par)
+}
+
+```
+
+
+```{r}
+data <- read_csv("AllProbabilities.csv")
+
+data$HomeBetGoals <- 0
+data$AwayBetGoals <- 0
+data$DrawBetGoals <- 0
+data$KCO_Goals <- 0
+
+data$HomeBetxG <- 0
+data$AwayBetxG <- 0
+data$DrawBetxG <- 0
+data$KCO_xG <- 0
+
+data$HomeBetReg <- 0
+data$AwayBetReg <- 0
+data$DrawBetReg <- 0
+data$KCO_Reg <- 0
+
+data$HomeBetRF <- 0
+data$AwayBetRF <- 0
+data$DrawBetRF <- 0
+data$KCO_RF <- 0
+
+
+for(i in 1:nrow(data)){
+  homeodds <- data$HomeOdds[[i]]
+  awayodds <- data$AwayOdds[[i]]
+  drawodds <- data$DrawOdds[[i]]
+  
+  homeprob <- data$HomeWinProbGoal[[i]]
+  awayprob <- data$AwayWinProbGoal[[i]]
+  drawprob <- data$DrawProbGoal[[i]]
+  
+  final <- KCO(homeodds, awayodds, drawodds, homeprob, awayprob, drawprob)
+  
+  data$HomeBetGoals[[i]] <- final[[1]]
+  data$AwayBetGoals[[i]] <- final[[2]]
+  data$DrawBetGoals[[i]] <- final[[3]]
+}
+
+
+for(i in 1:nrow(data)){
+  homeodds <- data$HomeOdds[[i]]
+  awayodds <- data$AwayOdds[[i]]
+  drawodds <- data$DrawOdds[[i]]
+  
+  homeprob <- data$HomeWinProbxG[[i]]
+  awayprob <- data$AwayWinProbxG[[i]]
+  drawprob <- data$DrawProbxG[[i]]
+  
+  final <- KCO(homeodds, awayodds, drawodds, homeprob, awayprob, drawprob)
+  
+  data$HomeBetxG[[i]] <- final[[1]]
+  data$AwayBetxG[[i]] <- final[[2]]
+  data$DrawBetxG[[i]] <- final[[3]]
+}
+
+
+for(i in 1:nrow(data)){
+  homeodds <- data$HomeOdds[[i]]
+  awayodds <- data$AwayOdds[[i]]
+  drawodds <- data$DrawOdds[[i]]
+  
+  homeprob <- data$HomeWinProbReg[[i]]
+  awayprob <- data$AwayWinProbReg[[i]]
+  drawprob <- data$DrawProbReg[[i]]
+  
+  final <- KCO(homeodds, awayodds, drawodds, homeprob, awayprob, drawprob)
+  
+  data$HomeBetReg[[i]] <- final[[1]]
+  data$AwayBetReg[[i]] <- final[[2]]
+  data$DrawBetReg[[i]] <- final[[3]]
+}
+
+
+for(i in 1:nrow(data)){
+  homeodds <- data$HomeOdds[[i]]
+  awayodds <- data$AwayOdds[[i]]
+  drawodds <- data$DrawOdds[[i]]
+  
+  homeprob <- data$HomeWinProbRF[[i]]
+  awayprob <- data$AwayWinProbRF[[i]]
+  drawprob <- data$DrawProbRF[[i]]
+  
+  final <- KCO(homeodds, awayodds, drawodds, homeprob, awayprob, drawprob)
+  
+  data$HomeBetRF[[i]] <- final[[1]]
+  data$AwayBetRF[[i]] <- final[[2]]
+  data$DrawBetRF[[i]] <- final[[3]]
+}
+
+data$KCO_Goals <- (data$HomeWinProbGoal*log10(100+(data$HomeBetGoals*data$HomeOdds)-data$HomeBetGoals-data$AwayBetGoals-data$DrawBetGoals)) + (data$AwayWinProbGoal*log10(100+(data$AwayBetGoals*data$AwayOdds)-data$HomeBetGoals-data$AwayBetGoals-data$DrawBetGoals)) + (data$DrawProbGoal*log10(100+(data$DrawBetGoals*data$DrawOdds)-data$HomeBetGoals-data$AwayBetGoals-data$DrawBetGoals))
+
+data$KCO_xG <- (data$HomeWinProbxG*log10(100+(data$HomeBetxG*data$HomeOdds)-data$HomeBetxG-data$AwayBetxG-data$DrawBetxG)) + (data$AwayWinProbxG*log10(100+(data$AwayBetxG*data$AwayOdds)-data$HomeBetxG-data$AwayBetxG-data$DrawBetxG)) + (data$DrawProbxG*log10(100+(data$DrawBetxG*data$DrawOdds)-data$HomeBetxG-data$AwayBetxG-data$DrawBetxG))
+
+
+data$KCO_Reg <- (data$HomeWinProbReg*log10(100+(data$HomeBetReg*data$HomeOdds)-data$HomeBetReg-data$AwayBetReg-data$DrawBetReg)) + (data$AwayWinProbReg*log10(100+(data$AwayBetReg*data$AwayOdds)-data$HomeBetReg-data$AwayBetReg-data$DrawBetReg)) + (data$DrawProbReg*log10(100+(data$DrawBetReg*data$DrawOdds)-data$HomeBetReg-data$AwayBetReg-data$DrawBetReg))
+
+data$KCO_RF <- (data$HomeWinProbRF*log10(100+(data$HomeBetRF*data$HomeOdds)-data$HomeBetRF-data$AwayBetRF-data$DrawBetRF)) + (data$AwayWinProbRF*log10(100+(data$AwayBetRF*data$AwayOdds)-data$HomeBetRF-data$AwayBetRF-data$DrawBetRF)) + (data$DrawProbRF*log10(100+(data$DrawBetRF*data$DrawOdds)-data$HomeBetRF-data$AwayBetRF-data$DrawBetRF))
+
+
+
+
+
+write_csv(data, "KCO_Data.csv")
+
+
+```
+
+
+
+
+
+

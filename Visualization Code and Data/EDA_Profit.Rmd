@@ -1,0 +1,107 @@
+
+```{r}
+library(tidyverse)
+library(ggrepel)
+library(ggpubr)
+
+```
+
+
+```{r}
+
+data <- read_csv("Profit.csv")
+Bunde2019 <- data %>% filter(League=="Bunde2019")
+all <- data %>% filter(KCOFilter=="All Values")
+data3 <- data %>% filter(KCOFilter=="Greater than 2")
+data1 <- data %>% filter(KCOFilter=="Greater than 2.05")
+data2 <- data %>% filter(KCOFilter=="Greater than 2.1")
+dataKCO <- rbind(data3, data1, data2)
+
+
+
+profit <- dataKCO %>% ggplot(aes(y=RFProfitPercent, x=League, fill=KCOFilter)) + geom_bar(stat="identity", position=position_dodge(), color="black", width=0.75) + theme_bw() + theme(axis.text.x = element_text(angle=35, hjust = 1,vjust=1,size = 11, color="black")) + ylab("Profit Percentage") + ggtitle("Profit Percentage with Different Filters on the KCO Value") + scale_fill_manual(values=c("#008DFF", "#FFAB33", "#C533FF")) 
+profit
+
+ggsave("profit.pdf", profit, width=9)
+
+
+data1$`Profit Percent` <- data1$RFProfitPercent
+data3$`Profit Percent` <- data3$RFProfitPercent
+
+sample <- data1 %>% ggplot(aes(x=RFNetIncome, y=BetAmountRF, color=`Profit Percent`)) + geom_point(size=6) + coord_flip() + scale_color_gradientn(colors = c("#00AFBB", "#E7B800", "#FC4E07")) + geom_label_repel(aes(label = League), point.padding = 0.75, segment.color = 'black', color="black", segment.size = 1) + theme_bw() + ggtitle("Profit vs Amount Wagered for Bets with a KCO Value > 2.05") + ylab("Amount Wagered") + xlab("Profit") + scale_fill_discrete(name = "Profit Percent") + theme(plot.title = element_text(hjust = 0.5))
+sample
+sample1 <- data3 %>% ggplot(aes(x=RFNetIncome, y=BetAmountRF, color=`Profit Percent`)) + geom_point(size=6) + coord_flip() + scale_color_gradientn(colors = c("#00AFBB", "#E7B800", "#FC4E07")) + geom_label_repel(aes(label = League), point.padding = 0.75, segment.color = 'black', color="black", segment.size = 1) + theme_bw() + ggtitle("Profit vs Amount Wagered for Bets with a KCO Value > 2") + ylab("Amount Wagered") + xlab("Profit") + scale_fill_discrete(name = "Profit Percent") + theme(plot.title = element_text(hjust = 0.5))
+sample1
+
+sample3 <- ggarrange(sample, sample1, nrow=1, ncol=2)
+
+ggsave("AmountWageredVsProfit.pdf", sample, height = 5, width = 9)
+
+
+betnumber <- dataKCO %>% ggplot(aes(y=RFBets, x=League, fill=KCOFilter)) + geom_bar(stat="identity", position=position_dodge(), color="black", width=0.75) + theme_bw() + theme(axis.text.x = element_text(angle=35, hjust = 1,vjust=1,size = 11, color="black")) + ylab("Profit Percentage") + ggtitle("Profit Percentage with Different Filters on the KCO Value") + scale_fill_manual(values=c("#008DFF", "#FFAB33", "#C533FF"))
+betnumber
+
+
+```
+
+
+
+```{r}
+data <- read_csv("Profit.csv")
+Bunde2018 <- data %>% filter(League=="Bunde2018")
+Bunde2019 <- data %>% filter(League=="Bunde2019")
+
+Plot2018 <- Bunde2018 %>% ggplot(aes(y=RFProfitPercent, x=KCOFilter)) + geom_bar(stat="identity", position=position_dodge(3), color="black", width=0.75, fill="lightblue") + theme_bw() + theme(axis.text.x = element_text(angle=35, hjust = 1,vjust=1,size = 11, color="black")) + ylab("Profit Percentage") + labs(title = "Profit Percentage based on the KCO Value \n for the 2018 Bundesliga Season") + theme(plot.title = element_text(hjust = 0.5)) + geom_text(aes(label=paste(100*round(RFProfitPercent,2),"%",sep="")), vjust=-0.45) +  ylim(0, 1.44)
+Plot2018
+
+BetCount2018 <- Bunde2018 %>% ggplot(aes(y=RFBets, x=KCOFilter)) + geom_bar(stat="identity", position=position_dodge(), color="black", width=0.75, fill="lightblue") + theme_bw() + theme(axis.text.x = element_text(angle=35, hjust = 1,vjust=1,size = 11, color="black")) + ylab("Profit Percentage") + labs(title = "Number of Bets Suggested based on the KCO Value \n for the 2018 Bundesliga Season") + theme(plot.title = element_text(hjust = 0.5)) + geom_text(aes(label=RFBets), vjust=-0.45) + ylim(0, 220)
+BetCount2018
+
+
+BetCount2019 <- Bunde2019 %>% ggplot(aes(y=RFBets, x=KCOFilter)) + geom_bar(stat="identity", position=position_dodge(), color="black", width=0.75, fill="lightblue") + theme_bw() + theme(axis.text.x = element_text(angle=35, hjust = 1,vjust=1,size = 11, color="black")) + ylab("Profit Percentage") + labs(title = "Number of Bets Suggested based on the KCO Value \n for the 2019 LaLiga Season") + theme(plot.title = element_text(hjust = 0.5)) + geom_text(aes(label=RFBets), vjust=-0.45) + ylim(0,260)
+BetCount2019
+
+
+Plot2019 <- Bunde2019 %>% ggplot(aes(y=RFProfitPercent, x=KCOFilter)) + geom_bar(stat="identity", position=position_dodge(3), color="black", width=0.75, fill="cornflowerblue") + theme_bw() + theme(axis.text.x = element_text(angle=35, hjust = 1,vjust=1,size = 11, color="black")) + ylab("Profit Percentage") + labs(title = "Profit Percentage based on the KCO Value \n for the 2019 Bundesliga Season") + theme(plot.title = element_text(hjust = 0.5)) + geom_text(aes(label=paste(100*round(RFProfitPercent,2),"%",sep="")), vjust=-0.45) + ylim(0,3.05)
+Plot2019
+
+kcoincrement <- ggarrange(Plot2018, Plot2019, nrow=1, ncol=2)
+kcocount <- ggarrange(Plot2019, BetCount2019, nrow=1, ncol=2)
+
+ggsave("BundeKCO.pdf", kcoincrement, width=11, height=6)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

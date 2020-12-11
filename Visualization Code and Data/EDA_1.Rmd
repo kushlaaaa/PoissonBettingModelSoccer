@@ -1,0 +1,67 @@
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+
+```
+
+##KCO Density
+```{r}
+data <- read_csv("KCO_Income_Data.csv")
+
+KCODensity <- data %>% ggplot( aes(x=KCO_RF)) + 
+  geom_density(fill = "mediumpurple", colour = "black", alpha = 0.6, lwd = 1) + 
+  scale_x_continuous(name = "KCO Value", breaks = seq(1.65,2.55,0.1),limits = c(1.65,2.55)) + 
+  scale_y_continuous(name = "Density") + ggtitle("Density Plot for KCO Values") + theme_bw() + geom_vline(xintercept = density(data$KCO_RF)$x[which.max(density(data$KCO_RF)$y)], lwd=1, color="black", linetype="dashed")
+KCODensity
+
+ggsave("KCODensity.pdf", KCODensity, width = 8, height=5)
+
+LeagueKCODensity <- data %>% ggplot( aes(x=KCO_RF, fill=League)) + 
+  geom_density(alpha = 0.6) + 
+  scale_x_continuous(name = "KCO Value", breaks = seq(1.65,2.55,0.1),limits = c(1.65,2.55)) + 
+  scale_y_continuous(name = "Density") + ggtitle("Density Plot for KCO Values") + theme_bw() + geom_vline(xintercept = density(data$KCO_RF)$x[which.max(density(data$KCO_RF)$y)], lwd=1, linetype="dashed")
+LeagueKCODensity
+ggsave("LeagueKCODensity.pdf", LeagueKCODensity, width = 8, height=5)
+
+
+```
+
+##Example KCO Interaction
+```{r}
+example <- read_csv("HomeBet_KCO_Ex.csv")
+
+yrng <- range(example$`KCO Value`)
+xrng <- range(example$HomeBet)
+caption <- paste(strwrap("Optimal Bet", 40), collapse = "\n")
+
+kcoBet <- example %>% ggplot(aes(x=HomeBet, y=`KCO Value`)) + geom_smooth(lwd=1.25) + theme_bw() + ggtitle("Home Bet Interaction with KCO Value") +   annotate(geom = "curve", x = 20, y = 2.0086, xend = 23, yend = 2.0025, curvature = .5, arrow = arrow(length = unit(2, "mm")), lwd=1) + annotate(geom = "text", x = 23.3, y = 2.0025, label = "Optimal Bet", hjust = "left", size=5) + geom_hline(yintercept = 2, color="orange", lwd=1.25) + xlim(0,50.1)
+
+kcoBet
+ggsave( "kcoBet.pdf", kcoBet, width = 7, height = 4)
+```
+
+
+##KCO Value vs Net Income
+```{r}
+
+data <- read_csv("KCO_Income_Data.csv")
+data <- data %>% filter(Week > 13)
+data$`Net Income` <- data$NetIncomeRF
+KCOIncome <- ggplot(data, aes(x=KCO_RF, y=NetIncomeRF)) + geom_jitter(aes(color = `Net Income`), size = 3.5) + theme_bw()+ geom_smooth(method = loess, color="black", lwd=1.25, se=F) + scale_color_gradientn(colors = c("#00AFBB", "#E7B800", "#FC4E07")) + ggtitle("KCO Value vs Net Income for Each Bet") + xlab("KCO Value") + ylab("Net Income")
+KCOIncome
+
+ggsave("KCOIncome.pdf", KCOIncome, width = 8, height=4)
+
+LeagueKCOIncome <- data %>% ggplot(aes(x=KCO_RF, y=NetIncomeRF, color=League)) + geom_point() + theme_bw() + geom_smooth(method = loess, color="black", lwd=1.25, se=F) + ggtitle("KCO Value vs Net Income for Each Bet") + xlab("KCO Value") + ylab("Net Income")
+LeagueKCOIncome
+
+KCOIncome_2 <- ggplot(data, aes(x=KCO_RF, y=NetIncomeRF)) + geom_jitter(aes(color = League), size = 3.5) + theme_bw() + geom_smooth(method = loess, color="black", lwd=1.25, se=F)+ ggtitle("KCO Value vs Net Income for Each Bet") + xlab("KCO Value") + ylab("Net Income")
+KCOIncome_2
+ggsave("KCOIncome2.pdf", KCOIncome_2, width = 8, height=4)
+
+
+
+
+```
+

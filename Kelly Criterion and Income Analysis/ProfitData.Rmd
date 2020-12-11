@@ -1,0 +1,102 @@
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+```
+
+
+```{r}
+
+data <- read_csv("KCO_Income_Data.csv")
+KCO <- 2.1
+
+Goals <- data %>% select(c(League, Week, Home, Away,KCO_Goals, NetIncomeGoals, TotalBetGoals))
+Goals <- Goals %>% filter(KCO_Goals > KCO)
+
+Goals$Positive <- ifelse(Goals$NetIncomeGoals > 0, 1, 0)
+
+Goals <- Goals %>% filter(Week > 13)
+GoalsLeague <- Goals %>% group_by(League) %>% summarise(GoalsNetIncome = sum(NetIncomeGoals), GoalsWin = sum(Positive), GoalsMax = max(NetIncomeGoals), BetAmountGoals = sum(TotalBetGoals), GOalsProfitPercent = (sum(NetIncomeGoals)/sum(BetAmountGoals)), GoalsBets = n(), GoalsWinPercent = (sum(Positive)/n()))
+
+GoalsLeague
+
+
+xG <- data %>% select(c(League, Week, Home, Away,KCO_xG, NetIncomexG, TotalBetxG))
+xG <- xG %>% filter(KCO_xG > KCO)
+
+xG$Positive <- ifelse(xG$NetIncomexG > 0, 1, 0)
+
+xG <- xG %>% filter(Week > 13)
+xGLeague <- xG %>% group_by(League) %>% summarise(xGNetIncome = sum(NetIncomexG), xGWin = sum(Positive), xGMax = max(NetIncomexG), BetAmountxG = sum(TotalBetxG), xGProfitPercent = (sum(NetIncomexG)/sum(BetAmountxG)), xGBets = n(), xGWinPercent = (sum(Positive)/n()))
+
+xGLeague
+
+
+Reg <- data %>% select(c(League, Week, Home, Away,KCO_Reg, NetIncomeReg, TotalBetReg))
+Reg <- Reg %>% filter(KCO_Reg > KCO)
+
+Reg$Positive <- ifelse(Reg$NetIncomeReg > 0, 1, 0)
+
+Reg <- Reg %>% filter(Week > 13)
+RegLeague <- Reg %>% group_by(League) %>% summarise(RegNetIncome = sum(NetIncomeReg), RegWin = sum(Positive), RegMax = max(NetIncomeReg), BetAmountReg = sum(TotalBetReg), RegProfitPercent = (sum(NetIncomeReg)/sum(BetAmountReg)), RegBets = n(), RegWinPercent = (sum(Positive)/n()))
+
+RegLeague
+
+
+RF <- data %>% select(c(League, Week, Home, Away,KCO_RF, NetIncomeRF, TotalBetRF))
+RF <- RF %>% filter(KCO_RF > KCO)
+
+RF$Positive <- ifelse(RF$NetIncomeRF > 0, 1, 0)
+
+RF <- RF %>% filter(Week > 13)
+RFLeague <- RF %>% group_by(League) %>% summarise(RFNetIncome = sum(NetIncomeRF), RFWin = sum(Positive), RFMax = max(NetIncomeRF), BetAmountRF = sum(TotalBetRF), RFProfitPercent = (sum(NetIncomeRF)/sum(BetAmountRF)), RFBets = n(), RFWinPercent = (sum(Positive)/n()))
+
+RFLeague
+
+
+
+```
+
+```{r}
+profitdata <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata$KCOFilter <- "All Values"
+
+profitdata2 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2$KCOFilter <- "Greater than 2"
+
+profitdata2.01 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2.01$KCOFilter <- "Greater than 2.01"
+
+profitdata2.02 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2.02$KCOFilter <- "Greater than 2.02"
+
+profitdata2.03 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2.03$KCOFilter <- "Greater than 2.03"
+
+profitdata2.04 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2.04$KCOFilter <- "Greater than 2.04"
+
+profitdata2.05 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2.05$KCOFilter <- "Greater than 2.05"
+
+profitdata2.06 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2.06$KCOFilter <- "Greater than 2.06"
+
+profitdata2.07 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2.07$KCOFilter <- "Greater than 2.07"
+
+profitdata2.08 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2.08$KCOFilter <- "Greater than 2.08"
+
+profitdata2.09 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2.09$KCOFilter <- "Greater than 2.09"
+
+profitdata2.1 <- Reduce(function(...) merge(..., all=TRUE), list(GoalsLeague, xGLeague, RegLeague, RFLeague))
+profitdata2.1$KCOFilter <- "Greater than 2.1"
+
+
+profit <- rbind(profitdata, profitdata2, profitdata2.01, profitdata2.02, profitdata2.03, profitdata2.04, profitdata2.05, profitdata2.06, profitdata2.07, profitdata2.08, profitdata2.09, profitdata2.1)
+
+write_csv(profit, "Profit.csv")
+```
+

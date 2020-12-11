@@ -1,0 +1,381 @@
+﻿Wk,Home,Away,HomeGoals,AwayGoals,HomexG,AwayxG
+1,Girona,Valladolid,0,0,0.9,0.1
+1,Betis,Levante,0,3,1.4,1.9
+1,Celta Vigo,Espanyol,1,1,0.5,0.8
+1,Villarreal,Real Sociedad,1,2,1,0.6
+1,Barcelona,Alavés,3,0,3.1,0.3
+1,Eibar,Huesca,1,2,1.2,1.2
+1,Rayo Vallecano,Sevilla,1,4,1.8,2.3
+1,Real Madrid,Getafe,2,0,0.8,0.3
+1,Valencia,Atlético Madrid,1,1,0.9,1.1
+1,Athletic Club,Leganés,2,1,1.8,1.6
+2,Getafe,Eibar,2,0,1.4,0.5
+2,Leganés,Real Sociedad,2,2,2.2,1.8
+2,Alavés,Betis,0,0,0.7,1.5
+2,Atlético Madrid,Rayo Vallecano,1,0,0.6,1.5
+2,Valladolid,Barcelona,0,1,0.3,0.9
+2,Espanyol,Valencia,2,0,1.6,1.3
+2,Sevilla,Villarreal,0,0,1.9,1
+2,Girona,Real Madrid,1,4,0.7,3
+2,Levante,Celta Vigo,1,2,1.9,3.1
+2,Athletic Club,Huesca,2,2,0.6,0.4
+3,Getafe,Valladolid,0,0,0.8,0.5
+3,Eibar,Real Sociedad,2,1,1.1,1
+3,Villarreal,Girona,0,1,1.2,0.8
+3,Celta Vigo,Atlético Madrid,2,0,0.8,0.5
+3,Real Madrid,Leganés,4,1,2.2,1.1
+3,Levante,Valencia,2,2,1.5,3.4
+3,Alavés,Espanyol,2,1,1,1.5
+3,Barcelona,Huesca,8,2,5,1.2
+3,Betis,Sevilla,1,0,0.8,0.5
+4,Huesca,Rayo Vallecano,0,1,1.7,1
+4,Atlético Madrid,Eibar,1,1,1.8,1.3
+4,Real Sociedad,Barcelona,1,2,1.2,1.4
+4,Valencia,Betis,0,0,1.3,1.1
+4,Athletic Club,Real Madrid,1,1,1.5,2
+4,Leganés,Villarreal,0,1,1.3,0.7
+4,Espanyol,Levante,1,0,1,0.7
+4,Valladolid,Alavés,0,1,1.8,0.8
+4,Sevilla,Getafe,0,2,1.7,2
+4,Girona,Celta Vigo,3,2,1.1,1
+5,Huesca,Real Sociedad,0,1,1.2,0.3
+5,Rayo Vallecano,Alavés,1,5,1,0.8
+5,Eibar,Leganés,1,0,1.2,0.2
+5,Celta Vigo,Valladolid,3,3,1.4,2.1
+5,Getafe,Atlético Madrid,0,2,0.8,1
+5,Real Madrid,Espanyol,1,0,1.2,0.7
+5,Levante,Sevilla,2,6,2.6,2.9
+5,Villarreal,Valencia,0,0,1,0.4
+5,Betis,Athletic Club,2,2,1.4,0.8
+5,Barcelona,Girona,2,2,1.3,0.9
+6,Espanyol,Eibar,1,0,1,0.3
+6,Real Sociedad,Rayo Vallecano,2,2,1.7,1.5
+6,Atlético Madrid,Huesca,3,0,1.4,1.3
+6,Leganés,Barcelona,2,1,1.1,0.6
+6,Athletic Club,Villarreal,0,3,0.9,2.7
+6,Valencia,Celta Vigo,1,1,2.1,0.4
+6,Sevilla,Real Madrid,3,0,2.6,1.2
+6,Valladolid,Levante,2,1,1.3,0.6
+6,Alavés,Getafe,1,1,1.6,1
+6,Girona,Betis,0,1,0.7,1.6
+7,Rayo Vallecano,Espanyol,2,2,1.4,2
+7,Real Sociedad,Valencia,0,1,1.2,1.2
+7,Barcelona,Athletic Club,1,1,2.9,0.8
+7,Eibar,Sevilla,1,3,0.9,1.6
+7,Real Madrid,Atlético Madrid,0,0,1.1,0.7
+7,Huesca,Girona,1,1,1.5,1.4
+7,Villarreal,Valladolid,0,1,2.5,0.6
+7,Levante,Alavés,2,1,1.7,0.7
+7,Betis,Leganés,1,0,1.9,0.5
+7,Celta Vigo,Getafe,1,1,0.5,1
+8,Athletic Club,Real Sociedad,1,3,1.6,2.2
+8,Girona,Eibar,2,3,1.2,1.9
+8,Getafe,Levante,0,1,1.2,1.1
+8,Alavés,Real Madrid,1,0,0.8,0.9
+8,Leganés,Rayo Vallecano,1,0,0.9,0.3
+8,Valladolid,Huesca,1,0,1.1,0.5
+8,Atlético Madrid,Betis,1,0,0.7,0.4
+8,Sevilla,Celta Vigo,2,1,1.9,0.8
+8,Espanyol,Villarreal,3,1,3.8,1.7
+8,Valencia,Barcelona,1,1,1.4,0.4
+9,Celta Vigo,Alavés,0,1,1.1,1
+9,Real Madrid,Levante,1,2,3.4,2
+9,Valencia,Leganés,1,1,1.4,1
+9,Villarreal,Atlético Madrid,1,1,1.5,1
+9,Barcelona,Sevilla,4,2,2.5,1.8
+9,Rayo Vallecano,Getafe,1,2,0.5,0.4
+9,Eibar,Athletic Club,1,1,1.8,0.8
+9,Huesca,Espanyol,0,2,0.3,1.7
+9,Betis,Valladolid,0,1,1.1,0.6
+9,Real Sociedad,Girona,0,0,0.9,0.6
+3,Rayo Vallecano,Athletic Club,1,1,0.9,1.2
+10,Valladolid,Espanyol,1,1,1.8,0.4
+10,Girona,Rayo Vallecano,2,1,2.2,1.4
+10,Athletic Club,Valencia,0,0,0.7,0.7
+10,Celta Vigo,Eibar,4,0,1.5,2.1
+10,Levante,Leganés,2,0,1.1,1
+10,Atlético Madrid,Real Sociedad,2,0,1.7,0.3
+10,Getafe,Betis,2,0,2.2,0.7
+10,Barcelona,Real Madrid,5,1,3,2.1
+10,Alavés,Villarreal,2,1,2.1,1.7
+10,Sevilla,Huesca,2,1,2.3,0.6
+11,Leganés,Atlético Madrid,1,1,0.8,0.5
+11,Real Madrid,Valladolid,2,0,2.2,1.1
+11,Valencia,Girona,0,1,2,0.5
+11,Rayo Vallecano,Barcelona,2,3,1.4,1.2
+11,Eibar,Alavés,2,1,1.4,0.7
+11,Villarreal,Levante,1,1,1.4,0.8
+11,Real Sociedad,Sevilla,0,0,0.7,0.4
+11,Huesca,Getafe,1,1,1.3,1
+11,Betis,Celta Vigo,3,3,2.1,1.3
+11,Espanyol,Athletic Club,1,0,1.8,0.5
+12,Levante,Real Sociedad,1,3,1,1
+12,Valladolid,Eibar,0,0,0.5,1.4
+12,Getafe,Valencia,0,1,1.3,2.1
+12,Atlético Madrid,Athletic Club,3,2,1.1,1.6
+12,Girona,Leganés,0,0,0.6,0.9
+12,Alavés,Huesca,2,1,1,0.9
+12,Barcelona,Betis,3,4,4.2,2
+12,Rayo Vallecano,Villarreal,2,2,2.1,0.7
+12,Sevilla,Espanyol,2,1,3.3,1.5
+12,Celta Vigo,Real Madrid,2,4,1.5,2.1
+13,Leganés,Alavés,1,0,0.9,0.3
+13,Eibar,Real Madrid,3,0,2.9,0.6
+13,Valencia,Rayo Vallecano,3,0,1.8,0.7
+13,Huesca,Levante,2,2,2.3,0.6
+13,Atlético Madrid,Barcelona,1,1,0.1,0.5
+13,Athletic Club,Getafe,1,1,0.4,2.2
+13,Sevilla,Valladolid,1,0,2.3,0.6
+13,Espanyol,Girona,1,3,2.2,2.5
+13,Villarreal,Betis,2,1,1,1.2
+13,Real Sociedad,Celta Vigo,2,1,2.1,0.3
+14,Rayo Vallecano,Eibar,1,0,0.7,0.7
+14,Celta Vigo,Huesca,2,0,2.2,0.8
+14,Valladolid,Leganés,2,4,2.1,1.5
+14,Getafe,Espanyol,3,0,1,1.1
+14,Real Madrid,Valencia,2,0,1.2,0.6
+14,Betis,Real Sociedad,1,0,0.9,1
+14,Girona,Atlético Madrid,1,1,1.4,1.8
+14,Barcelona,Villarreal,2,0,1.2,0.7
+14,Alavés,Sevilla,1,1,1.4,1.9
+14,Levante,Athletic Club,3,0,1.7,1
+15,Leganés,Getafe,1,1,1.5,1.2
+15,Atlético Madrid,Alavés,3,0,2.3,1.4
+15,Valencia,Sevilla,1,1,1.2,1.4
+15,Villarreal,Celta Vigo,2,3,1.5,1.8
+15,Espanyol,Barcelona,0,4,1.1,2.6
+15,Eibar,Levante,4,4,3.5,3.2
+15,Huesca,Real Madrid,0,1,1.1,0.3
+15,Real Sociedad,Valladolid,1,2,2.1,1.1
+15,Betis,Rayo Vallecano,2,0,1.8,1.2
+15,Athletic Club,Girona,1,0,2.1,0.1
+16,Celta Vigo,Leganés,0,0,0.9,0.7
+16,Getafe,Real Sociedad,1,0,0.5,0.8
+16,Valladolid,Atlético Madrid,2,3,1,1.8
+16,Real Madrid,Rayo Vallecano,1,0,1.2,0.8
+16,Eibar,Valencia,1,1,1.4,2
+16,Sevilla,Girona,2,0,2.6,0.8
+16,Espanyol,Betis,1,3,0.9,1.7
+16,Huesca,Villarreal,2,2,4,1.6
+16,Levante,Barcelona,0,5,1.1,3
+16,Alavés,Athletic Club,0,0,0.5,0.4
+17,Girona,Getafe,1,1,1.3,0.9
+17,Real Sociedad,Alavés,0,1,1.3,0.6
+17,Betis,Eibar,1,1,1.5,2
+17,Atlético Madrid,Espanyol,1,0,1,1.1
+17,Barcelona,Celta Vigo,2,0,1.2,0.7
+17,Athletic Club,Valladolid,1,1,1.1,0.6
+17,Valencia,Huesca,2,1,2.6,2
+17,Leganés,Sevilla,1,1,0.8,0.8
+17,Rayo Vallecano,Levante,2,1,2.1,1
+17,Villarreal,Real Madrid,2,2,0.9,1.2
+18,Levante,Girona,2,2,1.6,1.1
+18,Espanyol,Leganés,1,0,1.2,0.4
+18,Valladolid,Rayo Vallecano,0,1,1.6,0.9
+18,Alavés,Valencia,2,1,1.8,1.2
+18,Huesca,Betis,2,1,1.5,1.4
+18,Eibar,Villarreal,0,0,1.8,0.9
+18,Sevilla,Atlético Madrid,1,1,1.5,0.8
+18,Real Madrid,Real Sociedad,0,2,2.6,2.1
+18,Getafe,Barcelona,1,2,1.4,2
+18,Celta Vigo,Athletic Club,1,2,1.1,1.6
+19,Rayo Vallecano,Celta Vigo,4,2,2,1.2
+19,Leganés,Huesca,1,0,1.9,0.5
+19,Valencia,Valladolid,1,1,2.3,0.1
+19,Girona,Alavés,1,1,0.4,0.8
+19,Villarreal,Getafe,1,2,1.9,0.9
+19,Atlético Madrid,Levante,1,0,2.3,0.7
+19,Athletic Club,Sevilla,2,0,1.2,0.8
+19,Barcelona,Eibar,3,0,1.4,0.9
+19,Betis,Real Madrid,1,2,0.7,0.9
+19,Real Sociedad,Espanyol,3,2,2.1,1.7
+20,Getafe,Alavés,4,0,2,0.3
+20,Real Madrid,Sevilla,2,0,1.3,0.3
+20,Huesca,Atlético Madrid,0,3,1,2
+20,Celta Vigo,Valencia,1,2,0.6,1.5
+20,Betis,Girona,3,2,1.6,0.9
+20,Villarreal,Athletic Club,1,1,1,0.5
+20,Levante,Valladolid,2,0,1.2,1.2
+20,Rayo Vallecano,Real Sociedad,2,2,0.9,1.7
+20,Barcelona,Leganés,3,1,1.6,0.6
+20,Eibar,Espanyol,3,0,1.6,0.8
+21,Sevilla,Levante,5,0,4.8,0.6
+21,Atlético Madrid,Getafe,2,0,1.1,0.2
+21,Leganés,Eibar,2,2,0.7,0.3
+21,Valencia,Villarreal,3,0,1.7,0.7
+21,Valladolid,Celta Vigo,2,1,2.5,0.9
+21,Girona,Barcelona,0,2,1.2,2.3
+21,Athletic Club,Betis,1,0,0.7,0.3
+21,Real Sociedad,Huesca,0,0,0.6,0.6
+21,Espanyol,Real Madrid,2,4,0.9,2
+21,Alavés,Rayo Vallecano,0,1,1,0.7
+22,Huesca,Valladolid,4,0,1.2,0.5
+22,Levante,Getafe,0,0,0.8,0.3
+22,Real Sociedad,Athletic Club,2,1,1.5,1.2
+22,Barcelona,Valencia,2,2,1.8,2.9
+22,Celta Vigo,Sevilla,1,0,0.7,0.7
+22,Villarreal,Espanyol,2,2,2,1.2
+22,Betis,Atlético Madrid,1,0,1,0.7
+22,Eibar,Girona,3,0,1.9,0.3
+22,Real Madrid,Alavés,3,0,2.3,0.3
+22,Rayo Vallecano,Leganés,1,2,1.2,0.7
+23,Valladolid,Villarreal,0,0,0.7,1
+23,Getafe,Celta Vigo,3,1,3.1,0.7
+23,Atlético Madrid,Real Madrid,1,3,0.9,1.6
+23,Espanyol,Rayo Vallecano,2,1,2,0.7
+23,Girona,Huesca,0,2,1,0.5
+23,Leganés,Betis,3,0,1.7,0.2
+23,Valencia,Real Sociedad,0,0,1,0.6
+23,Sevilla,Eibar,2,2,1.3,1.2
+23,Athletic Club,Barcelona,0,0,1.4,0.9
+23,Alavés,Levante,2,0,1.7,0.2
+24,Eibar,Getafe,2,2,1.6,1.3
+24,Celta Vigo,Levante,1,4,1.6,2.3
+24,Rayo Vallecano,Atlético Madrid,0,1,0.6,0.2
+24,Real Sociedad,Leganés,3,0,1.5,0.4
+24,Barcelona,Valladolid,1,0,3.5,0.4
+24,Real Madrid,Girona,1,2,1.3,2.1
+24,Valencia,Espanyol,0,0,2,0.4
+24,Villarreal,Sevilla,3,0,1.5,1.7
+24,Betis,Alavés,1,1,2.4,0.5
+24,Huesca,Athletic Club,0,1,1,1.2
+25,Espanyol,Huesca,1,1,0.6,1
+25,Getafe,Rayo Vallecano,2,1,1.5,0.4
+25,Sevilla,Barcelona,2,4,1.1,1.7
+25,Alavés,Celta Vigo,0,0,1.1,0.6
+25,Athletic Club,Eibar,1,0,1.5,0.7
+25,Leganés,Valencia,1,1,1.7,0.5
+25,Atlético Madrid,Villarreal,2,0,1.4,0.9
+25,Valladolid,Betis,0,2,0.6,0.9
+25,Levante,Real Madrid,1,2,1.2,2.5
+25,Girona,Real Sociedad,0,0,0.6,0.7
+26,Rayo Vallecano,Girona,0,2,0.7,1.4
+26,Espanyol,Valladolid,3,1,2.8,1.5
+26,Villarreal,Alavés,1,2,1.2,1.5
+26,Huesca,Sevilla,2,1,0.6,2.1
+26,Real Madrid,Barcelona,0,1,1.1,1.6
+26,Eibar,Celta Vigo,1,0,2.3,0.9
+26,Betis,Getafe,1,2,0.8,1.3
+26,Real Sociedad,Atlético Madrid,0,2,0.9,2
+26,Valencia,Athletic Club,2,0,1.3,0.3
+26,Leganés,Levante,1,0,1.4,1.5
+27,Athletic Club,Espanyol,1,1,0.7,0.4
+27,Alavés,Eibar,1,1,1.8,2
+27,Atlético Madrid,Leganés,1,0,1.3,0.1
+27,Barcelona,Rayo Vallecano,3,1,2.8,0.3
+27,Getafe,Huesca,2,1,1.6,0.7
+27,Celta Vigo,Betis,0,1,0.5,1.2
+27,Girona,Valencia,2,3,1.9,1
+27,Sevilla,Real Sociedad,5,2,2.4,1.1
+27,Levante,Villarreal,0,2,1,0.8
+27,Valladolid,Real Madrid,1,4,2.3,2.7
+28,Real Sociedad,Levante,1,1,2,0.8
+28,Huesca,Alavés,1,3,1.5,2.1
+28,Real Madrid,Celta Vigo,2,0,2.3,0.4
+28,Athletic Club,Atlético Madrid,2,0,1.1,0.6
+28,Leganés,Girona,0,2,0.5,1.3
+28,Eibar,Valladolid,1,2,1.4,2
+28,Espanyol,Sevilla,0,1,0.8,1.2
+28,Villarreal,Rayo Vallecano,3,1,2.1,0.2
+28,Valencia,Getafe,0,0,0.6,0.3
+28,Betis,Barcelona,1,4,1,2.9
+29,Girona,Athletic Club,1,2,0.3,0.7
+29,Getafe,Leganés,0,2,0.5,1.2
+29,Barcelona,Espanyol,2,0,1.1,0.2
+29,Celta Vigo,Villarreal,3,2,1.5,2
+29,Alavés,Atlético Madrid,0,4,0.7,1.4
+29,Levante,Eibar,2,2,1,1.7
+29,Rayo Vallecano,Betis,1,1,2.2,0.5
+29,Sevilla,Valencia,0,1,1.1,0.9
+29,Valladolid,Real Sociedad,1,1,1.2,0.4
+29,Real Madrid,Huesca,3,2,3.7,1.6
+30,Atlético Madrid,Girona,2,0,2.5,0.4
+30,Espanyol,Getafe,1,1,1.5,1.3
+30,Villarreal,Barcelona,4,4,2.8,2.4
+30,Athletic Club,Levante,3,2,1.7,1.2
+30,Eibar,Rayo Vallecano,2,1,1.4,0.7
+30,Huesca,Celta Vigo,3,3,2.6,1.4
+30,Valencia,Real Madrid,2,1,1.5,0.7
+30,Sevilla,Alavés,2,0,1.4,0.4
+30,Leganés,Valladolid,1,0,1.8,0.8
+30,Real Sociedad,Betis,2,1,2,1.2
+31,Girona,Espanyol,1,2,1.7,0.4
+31,Real Madrid,Eibar,2,1,1.3,0.5
+31,Rayo Vallecano,Valencia,2,0,1.9,2
+31,Barcelona,Atlético Madrid,2,0,2.2,0.5
+31,Alavés,Leganés,1,1,0.9,0.8
+31,Getafe,Athletic Club,1,0,0.7,0.5
+31,Valladolid,Sevilla,0,2,0.8,1.7
+31,Levante,Huesca,2,2,2.6,0.8
+31,Celta Vigo,Real Sociedad,3,1,2.9,1.4
+31,Betis,Villarreal,2,1,2.4,1.5
+32,Espanyol,Alavés,2,1,0.5,0.8
+32,Huesca,Barcelona,0,0,0.3,1
+32,Atlético Madrid,Celta Vigo,2,0,1.5,0.9
+32,Sevilla,Betis,3,2,1.7,1.1
+32,Valladolid,Getafe,2,2,1.2,1.2
+32,Athletic Club,Rayo Vallecano,3,2,2.1,1
+32,Real Sociedad,Eibar,1,1,0.6,1
+32,Girona,Villarreal,0,1,0.8,1.4
+32,Valencia,Levante,3,1,2.4,0.2
+32,Leganés,Real Madrid,1,1,0.4,1.1
+33,Alavés,Valladolid,2,2,1.5,1.5
+33,Celta Vigo,Girona,2,1,1.3,0.7
+33,Eibar,Atlético Madrid,0,1,0.5,1.4
+33,Rayo Vallecano,Huesca,0,0,1,0.5
+33,Barcelona,Real Sociedad,2,1,1,1
+33,Levante,Espanyol,2,2,1.7,1.3
+33,Getafe,Sevilla,3,0,2.6,0.5
+33,Real Madrid,Athletic Club,3,0,1.4,0.4
+33,Villarreal,Leganés,2,1,1.2,1.2
+33,Betis,Valencia,1,2,1.7,0.4
+34,Huesca,Eibar,2,0,1.2,0.6
+34,Valladolid,Girona,1,0,0.8,0.4
+34,Alavés,Barcelona,0,2,0.3,2.5
+34,Atlético Madrid,Valencia,3,2,1.2,1.7
+34,Leganés,Athletic Club,0,1,0.4,0.4
+34,Espanyol,Celta Vigo,1,1,1.4,2.4
+34,Levante,Betis,4,0,1.2,0.2
+34,Sevilla,Rayo Vallecano,5,0,3.6,0.6
+34,Real Sociedad,Villarreal,0,1,0.8,0.8
+34,Getafe,Real Madrid,0,0,0.6,1.5
+35,Athletic Club,Alavés,1,1,1,1.5
+35,Atlético Madrid,Valladolid,1,0,0.8,0.7
+35,Leganés,Celta Vigo,0,0,0.4,0.5
+35,Barcelona,Levante,1,0,2.1,0.8
+35,Valencia,Eibar,0,1,0.5,0.9
+35,Girona,Sevilla,1,0,1.6,0.6
+35,Real Sociedad,Getafe,2,1,2.1,0.8
+35,Villarreal,Huesca,1,1,0.9,1.7
+35,Rayo Vallecano,Real Madrid,1,0,1.5,0.5
+35,Betis,Espanyol,1,1,1.3,1.2
+36,Sevilla,Leganés,0,3,0.3,1.4
+36,Levante,Rayo Vallecano,4,1,1.9,1.3
+36,Espanyol,Atlético Madrid,3,0,1.3,1.2
+36,Alavés,Real Sociedad,0,1,0.7,0.7
+36,Celta Vigo,Barcelona,2,0,1.8,0.5
+36,Getafe,Girona,2,0,1.8,0.5
+36,Eibar,Betis,1,0,1.2,2.1
+36,Real Madrid,Villarreal,3,2,2.9,0.8
+36,Valladolid,Athletic Club,1,0,0.5,1.1
+36,Huesca,Valencia,2,6,2.6,2.4
+37,Leganés,Espanyol,0,2,1,2.8
+37,Villarreal,Eibar,1,0,1.4,0.3
+37,Girona,Levante,1,2,1.4,0.5
+37,Barcelona,Getafe,2,0,2.3,1.1
+37,Betis,Huesca,2,1,2.4,1.4
+37,Rayo Vallecano,Valladolid,1,2,0.9,1.3
+37,Valencia,Alavés,3,1,1.3,0.7
+37,Atlético Madrid,Sevilla,1,1,1.4,0.9
+37,Athletic Club,Celta Vigo,3,1,2.4,1
+37,Real Sociedad,Real Madrid,3,1,2,0.6
+38,Levante,Atlético Madrid,2,2,2.4,1.6
+38,Espanyol,Real Sociedad,2,0,1.1,0.6
+38,Getafe,Villarreal,2,2,1.1,0.9
+38,Sevilla,Athletic Club,2,0,1.7,0.6
+38,Valladolid,Valencia,0,2,1.1,1.8
+38,Huesca,Leganés,2,1,0.9,0.7
+38,Alavés,Girona,2,1,1.2,0.9
+38,Celta Vigo,Rayo Vallecano,2,2,2,1.1
+38,Real Madrid,Betis,0,2,0.7,1.4
+38,Eibar,Barcelona,2,2,1.3,1

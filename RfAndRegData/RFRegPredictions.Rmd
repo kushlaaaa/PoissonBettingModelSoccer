@@ -1,0 +1,868 @@
+
+```{r}
+library(tidyverse)
+library(randomForest)
+```
+
+
+##Data
+```{r}
+PL_17_18 <- read_csv("PL_2017_2018.csv")
+PL_18_19 <- read_csv("PL_2018_2019.csv")
+
+Bunde_17_18 <- read_csv("Bunde_2017_2018.csv")
+Bunde_18_19 <- read_csv("Bunde_2018_2019.csv")
+
+LaLiga_17_18 <- read_csv("LaLiga_2017_2018.csv")
+LaLiga_18_19 <- read_csv("LaLiga_2018_2019.csv")
+
+Ligue1_17_18 <- read_csv("Ligue1_2017_2018.csv")
+Ligue1_18_19 <- read_csv("Ligue1_2018_2019.csv")
+
+SerieA_17_18 <- read_csv("SerieA_2017_2018.csv")
+SerieA_18_19 <- read_csv("SerieA_2018_2019.csv")
+
+```
+
+
+```{r}
+final_pred <- tibble()
+
+for (i in 5:38){
+  data <- PL_17_18 %>% filter(Wk < i)
+  data[is.na(data)] <- 0
+  
+  pred_data <- PL_17_18 %>% filter(Wk == i)
+  pred_data[is.na(pred_data)] <- 0
+  
+  homedata <- data %>% group_by(Home) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  awaydata <- data %>% group_by(Away) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  homeregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  homegoalreg <- randomForest(HomeGoals ~ .,homeregdata)
+  homedata$HomePred <- predict(homegoalreg, homedata)
+  homedata$HomePred <- ifelse(homedata$HomePred < 0, 0, homedata$HomePred)
+
+  awayregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  awaygoalreg <- randomForest(AwayGoals ~ .,awayregdata)
+  awaydata$AwayPred <- predict(awaygoalreg, awaydata)
+  awaydata$AwayPred <- ifelse(awaydata$AwayPred < 0, 0, awaydata$AwayPred)
+
+  pred_data <- merge(pred_data, homedata, by="Home", all.x=TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred))
+  pred_data <- merge(pred_data, awaydata, by="Away", all = TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred, AwayPred))
+
+  pred_data$Zero_0 <- dpois(0, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Zero_1 <- dpois(0, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Zero_2 <- dpois(0, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Zero_3 <- dpois(0, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Zero_4 <- dpois(0, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Zero_5 <- dpois(0, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$One_0 <- dpois(1, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$One_1 <- dpois(1, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$One_2 <- dpois(1, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$One_3 <- dpois(1, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$One_4 <- dpois(1, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$One_5 <- dpois(1, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Two_0 <- dpois(2, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Two_1 <- dpois(2, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Two_2 <- dpois(2, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Two_3 <- dpois(2, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Two_4 <- dpois(2, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Two_5 <- dpois(2, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Three_0 <- dpois(3, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Three_1 <- dpois(3, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Three_2 <- dpois(3, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Three_3 <- dpois(3, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Three_4 <- dpois(3, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Three_5 <- dpois(3, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Four_0 <- dpois(4, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Four_1 <- dpois(4, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Four_2 <- dpois(4, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Four_3 <- dpois(4, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Four_4 <- dpois(4, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Four_5 <- dpois(4, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Five_0 <- dpois(5, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Five_1 <- dpois(5, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Five_2 <- dpois(5, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Five_3 <- dpois(5, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Five_4 <- dpois(5, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Five_5 <- dpois(5, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$HomeWinProb <- pred_data$One_0+ pred_data$Two_0+ pred_data$Two_1+ pred_data$Three_0+ pred_data$Three_1+ pred_data$Three_2+ pred_data$Four_0+ pred_data$Four_1+ pred_data$Four_2+ pred_data$Four_3+ pred_data$Five_0+ pred_data$Five_1+ pred_data$Five_2+ pred_data$Five_3+ pred_data$Five_4
+  
+  pred_data$AwayWinProb <- pred_data$Zero_1+ pred_data$Zero_2+ pred_data$Zero_3+ pred_data$Zero_4+ pred_data$Zero_5+ pred_data$One_2+ pred_data$One_3+ pred_data$One_4+ pred_data$One_5+ pred_data$Two_3+ pred_data$Two_4+ pred_data$Two_5+ pred_data$Three_4+ pred_data$Three_5+ pred_data$Four_5
+  
+  pred_data$DrawProb <- pred_data$Zero_0+ pred_data$One_1+ pred_data$Two_2+ pred_data$Three_3+ pred_data$Four_4+ pred_data$Five_5
+  
+  pred_data$Wk <- i
+  
+  final_pred <- rbind(final_pred, pred_data)
+
+}
+
+write_csv(final_pred, "PL_2017_2018_Pred_RF.csv")
+
+
+final_pred <- tibble()
+
+for (i in 5:38){
+  data <- PL_18_19 %>% filter(Wk < i)
+  data[is.na(data)] <- 0
+  
+  pred_data <- PL_18_19 %>% filter(Wk == i)
+  pred_data[is.na(pred_data)] <- 0
+  
+  homedata <- data %>% group_by(Home) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  awaydata <- data %>% group_by(Away) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  homeregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  homegoalreg <- randomForest(HomeGoals ~ .,homeregdata)
+  homedata$HomePred <- predict(homegoalreg, homedata)
+  homedata$HomePred <- ifelse(homedata$HomePred < 0, 0, homedata$HomePred)
+
+  awayregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  awaygoalreg <- randomForest(AwayGoals ~ .,awayregdata)
+  awaydata$AwayPred <- predict(awaygoalreg, awaydata)
+  awaydata$AwayPred <- ifelse(awaydata$AwayPred < 0, 0, awaydata$AwayPred)
+
+  pred_data <- merge(pred_data, homedata, by="Home", all.x=TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred))
+  pred_data <- merge(pred_data, awaydata, by="Away", all = TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred, AwayPred))
+
+  pred_data$Zero_0 <- dpois(0, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Zero_1 <- dpois(0, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Zero_2 <- dpois(0, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Zero_3 <- dpois(0, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Zero_4 <- dpois(0, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Zero_5 <- dpois(0, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$One_0 <- dpois(1, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$One_1 <- dpois(1, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$One_2 <- dpois(1, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$One_3 <- dpois(1, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$One_4 <- dpois(1, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$One_5 <- dpois(1, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Two_0 <- dpois(2, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Two_1 <- dpois(2, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Two_2 <- dpois(2, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Two_3 <- dpois(2, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Two_4 <- dpois(2, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Two_5 <- dpois(2, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Three_0 <- dpois(3, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Three_1 <- dpois(3, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Three_2 <- dpois(3, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Three_3 <- dpois(3, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Three_4 <- dpois(3, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Three_5 <- dpois(3, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Four_0 <- dpois(4, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Four_1 <- dpois(4, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Four_2 <- dpois(4, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Four_3 <- dpois(4, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Four_4 <- dpois(4, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Four_5 <- dpois(4, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Five_0 <- dpois(5, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Five_1 <- dpois(5, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Five_2 <- dpois(5, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Five_3 <- dpois(5, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Five_4 <- dpois(5, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Five_5 <- dpois(5, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$HomeWinProb <- pred_data$One_0+ pred_data$Two_0+ pred_data$Two_1+ pred_data$Three_0+ pred_data$Three_1+ pred_data$Three_2+ pred_data$Four_0+ pred_data$Four_1+ pred_data$Four_2+ pred_data$Four_3+ pred_data$Five_0+ pred_data$Five_1+ pred_data$Five_2+ pred_data$Five_3+ pred_data$Five_4
+  
+  pred_data$AwayWinProb <- pred_data$Zero_1+ pred_data$Zero_2+ pred_data$Zero_3+ pred_data$Zero_4+ pred_data$Zero_5+ pred_data$One_2+ pred_data$One_3+ pred_data$One_4+ pred_data$One_5+ pred_data$Two_3+ pred_data$Two_4+ pred_data$Two_5+ pred_data$Three_4+ pred_data$Three_5+ pred_data$Four_5
+  
+  pred_data$DrawProb <- pred_data$Zero_0+ pred_data$One_1+ pred_data$Two_2+ pred_data$Three_3+ pred_data$Four_4+ pred_data$Five_5
+  
+  pred_data$Wk <- i
+  
+  final_pred <- rbind(final_pred, pred_data)
+}
+
+write_csv(final_pred, "PL_2018_2019_Pred_RF.csv")
+
+
+final_pred <- tibble()
+
+for (i in 5:34){
+  data <- Bunde_17_18 %>% filter(Wk < i)
+  data[is.na(data)] <- 0
+  
+  pred_data <- Bunde_17_18 %>% filter(Wk == i)
+  pred_data[is.na(pred_data)] <- 0
+  
+  homedata <- data %>% group_by(Home) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  awaydata <- data %>% group_by(Away) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  homeregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  homegoalreg <- randomForest(HomeGoals ~ .,homeregdata)
+  homedata$HomePred <- predict(homegoalreg, homedata)
+  homedata$HomePred <- ifelse(homedata$HomePred < 0, 0, homedata$HomePred)
+
+  awayregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  awaygoalreg <- randomForest(AwayGoals ~ .,awayregdata)
+  awaydata$AwayPred <- predict(awaygoalreg, awaydata)
+  awaydata$AwayPred <- ifelse(awaydata$AwayPred < 0, 0, awaydata$AwayPred)
+
+  pred_data <- merge(pred_data, homedata, by="Home", all.x=TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred))
+  pred_data <- merge(pred_data, awaydata, by="Away", all = TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred, AwayPred))
+
+  pred_data$Zero_0 <- dpois(0, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Zero_1 <- dpois(0, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Zero_2 <- dpois(0, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Zero_3 <- dpois(0, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Zero_4 <- dpois(0, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Zero_5 <- dpois(0, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$One_0 <- dpois(1, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$One_1 <- dpois(1, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$One_2 <- dpois(1, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$One_3 <- dpois(1, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$One_4 <- dpois(1, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$One_5 <- dpois(1, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Two_0 <- dpois(2, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Two_1 <- dpois(2, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Two_2 <- dpois(2, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Two_3 <- dpois(2, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Two_4 <- dpois(2, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Two_5 <- dpois(2, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Three_0 <- dpois(3, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Three_1 <- dpois(3, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Three_2 <- dpois(3, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Three_3 <- dpois(3, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Three_4 <- dpois(3, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Three_5 <- dpois(3, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Four_0 <- dpois(4, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Four_1 <- dpois(4, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Four_2 <- dpois(4, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Four_3 <- dpois(4, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Four_4 <- dpois(4, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Four_5 <- dpois(4, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Five_0 <- dpois(5, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Five_1 <- dpois(5, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Five_2 <- dpois(5, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Five_3 <- dpois(5, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Five_4 <- dpois(5, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Five_5 <- dpois(5, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$HomeWinProb <- pred_data$One_0+ pred_data$Two_0+ pred_data$Two_1+ pred_data$Three_0+ pred_data$Three_1+ pred_data$Three_2+ pred_data$Four_0+ pred_data$Four_1+ pred_data$Four_2+ pred_data$Four_3+ pred_data$Five_0+ pred_data$Five_1+ pred_data$Five_2+ pred_data$Five_3+ pred_data$Five_4
+  
+  pred_data$AwayWinProb <- pred_data$Zero_1+ pred_data$Zero_2+ pred_data$Zero_3+ pred_data$Zero_4+ pred_data$Zero_5+ pred_data$One_2+ pred_data$One_3+ pred_data$One_4+ pred_data$One_5+ pred_data$Two_3+ pred_data$Two_4+ pred_data$Two_5+ pred_data$Three_4+ pred_data$Three_5+ pred_data$Four_5
+  
+  pred_data$DrawProb <- pred_data$Zero_0+ pred_data$One_1+ pred_data$Two_2+ pred_data$Three_3+ pred_data$Four_4+ pred_data$Five_5
+  
+  pred_data$Wk <- i
+  
+  final_pred <- rbind(final_pred, pred_data)
+}
+
+write_csv(final_pred, "Bunde_2017_2018_Pred_RF.csv")
+
+
+final_pred <- tibble()
+
+for (i in 5:34){
+  data <- Bunde_18_19 %>% filter(Wk < i)
+  data[is.na(data)] <- 0
+  
+  pred_data <- Bunde_18_19 %>% filter(Wk == i)
+  pred_data[is.na(pred_data)] <- 0
+  
+ homedata <- data %>% group_by(Home) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  awaydata <- data %>% group_by(Away) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  homeregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  homegoalreg <- randomForest(HomeGoals ~ .,homeregdata)
+  homedata$HomePred <- predict(homegoalreg, homedata)
+  homedata$HomePred <- ifelse(homedata$HomePred < 0, 0, homedata$HomePred)
+
+  awayregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  awaygoalreg <- randomForest(AwayGoals ~ .,awayregdata)
+  awaydata$AwayPred <- predict(awaygoalreg, awaydata)
+  awaydata$AwayPred <- ifelse(awaydata$AwayPred < 0, 0, awaydata$AwayPred)
+
+  pred_data <- merge(pred_data, homedata, by="Home", all.x=TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred))
+  pred_data <- merge(pred_data, awaydata, by="Away", all = TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred, AwayPred))
+
+  pred_data$Zero_0 <- dpois(0, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Zero_1 <- dpois(0, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Zero_2 <- dpois(0, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Zero_3 <- dpois(0, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Zero_4 <- dpois(0, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Zero_5 <- dpois(0, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$One_0 <- dpois(1, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$One_1 <- dpois(1, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$One_2 <- dpois(1, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$One_3 <- dpois(1, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$One_4 <- dpois(1, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$One_5 <- dpois(1, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Two_0 <- dpois(2, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Two_1 <- dpois(2, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Two_2 <- dpois(2, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Two_3 <- dpois(2, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Two_4 <- dpois(2, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Two_5 <- dpois(2, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Three_0 <- dpois(3, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Three_1 <- dpois(3, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Three_2 <- dpois(3, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Three_3 <- dpois(3, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Three_4 <- dpois(3, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Three_5 <- dpois(3, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Four_0 <- dpois(4, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Four_1 <- dpois(4, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Four_2 <- dpois(4, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Four_3 <- dpois(4, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Four_4 <- dpois(4, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Four_5 <- dpois(4, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Five_0 <- dpois(5, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Five_1 <- dpois(5, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Five_2 <- dpois(5, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Five_3 <- dpois(5, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Five_4 <- dpois(5, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Five_5 <- dpois(5, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$HomeWinProb <- pred_data$One_0+ pred_data$Two_0+ pred_data$Two_1+ pred_data$Three_0+ pred_data$Three_1+ pred_data$Three_2+ pred_data$Four_0+ pred_data$Four_1+ pred_data$Four_2+ pred_data$Four_3+ pred_data$Five_0+ pred_data$Five_1+ pred_data$Five_2+ pred_data$Five_3+ pred_data$Five_4
+  
+  pred_data$AwayWinProb <- pred_data$Zero_1+ pred_data$Zero_2+ pred_data$Zero_3+ pred_data$Zero_4+ pred_data$Zero_5+ pred_data$One_2+ pred_data$One_3+ pred_data$One_4+ pred_data$One_5+ pred_data$Two_3+ pred_data$Two_4+ pred_data$Two_5+ pred_data$Three_4+ pred_data$Three_5+ pred_data$Four_5
+  
+  pred_data$DrawProb <- pred_data$Zero_0+ pred_data$One_1+ pred_data$Two_2+ pred_data$Three_3+ pred_data$Four_4+ pred_data$Five_5
+  
+  pred_data$Wk <- i
+  
+  final_pred <- rbind(final_pred, pred_data)
+}
+
+write_csv(final_pred, "Bunde_2018_2019_Pred_RF.csv")
+
+
+final_pred <- tibble()
+
+for (i in 5:38){
+  data <- LaLiga_17_18 %>% filter(Wk < i)
+  data[is.na(data)] <- 0
+  
+  pred_data <- LaLiga_17_18 %>% filter(Wk == i)
+  pred_data[is.na(pred_data)] <- 0
+  
+ homedata <- data %>% group_by(Home) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  awaydata <- data %>% group_by(Away) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  homeregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  homegoalreg <- randomForest(HomeGoals ~ .,homeregdata)
+  homedata$HomePred <- predict(homegoalreg, homedata)
+  homedata$HomePred <- ifelse(homedata$HomePred < 0, 0, homedata$HomePred)
+
+  awayregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  awaygoalreg <- randomForest(AwayGoals ~ .,awayregdata)
+  awaydata$AwayPred <- predict(awaygoalreg, awaydata)
+  awaydata$AwayPred <- ifelse(awaydata$AwayPred < 0, 0, awaydata$AwayPred)
+
+  pred_data <- merge(pred_data, homedata, by="Home", all.x=TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred))
+  pred_data <- merge(pred_data, awaydata, by="Away", all = TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred, AwayPred))
+
+  pred_data$Zero_0 <- dpois(0, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Zero_1 <- dpois(0, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Zero_2 <- dpois(0, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Zero_3 <- dpois(0, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Zero_4 <- dpois(0, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Zero_5 <- dpois(0, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$One_0 <- dpois(1, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$One_1 <- dpois(1, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$One_2 <- dpois(1, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$One_3 <- dpois(1, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$One_4 <- dpois(1, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$One_5 <- dpois(1, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Two_0 <- dpois(2, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Two_1 <- dpois(2, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Two_2 <- dpois(2, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Two_3 <- dpois(2, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Two_4 <- dpois(2, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Two_5 <- dpois(2, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Three_0 <- dpois(3, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Three_1 <- dpois(3, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Three_2 <- dpois(3, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Three_3 <- dpois(3, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Three_4 <- dpois(3, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Three_5 <- dpois(3, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Four_0 <- dpois(4, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Four_1 <- dpois(4, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Four_2 <- dpois(4, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Four_3 <- dpois(4, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Four_4 <- dpois(4, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Four_5 <- dpois(4, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Five_0 <- dpois(5, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Five_1 <- dpois(5, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Five_2 <- dpois(5, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Five_3 <- dpois(5, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Five_4 <- dpois(5, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Five_5 <- dpois(5, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$HomeWinProb <- pred_data$One_0+ pred_data$Two_0+ pred_data$Two_1+ pred_data$Three_0+ pred_data$Three_1+ pred_data$Three_2+ pred_data$Four_0+ pred_data$Four_1+ pred_data$Four_2+ pred_data$Four_3+ pred_data$Five_0+ pred_data$Five_1+ pred_data$Five_2+ pred_data$Five_3+ pred_data$Five_4
+  
+  pred_data$AwayWinProb <- pred_data$Zero_1+ pred_data$Zero_2+ pred_data$Zero_3+ pred_data$Zero_4+ pred_data$Zero_5+ pred_data$One_2+ pred_data$One_3+ pred_data$One_4+ pred_data$One_5+ pred_data$Two_3+ pred_data$Two_4+ pred_data$Two_5+ pred_data$Three_4+ pred_data$Three_5+ pred_data$Four_5
+  
+  pred_data$DrawProb <- pred_data$Zero_0+ pred_data$One_1+ pred_data$Two_2+ pred_data$Three_3+ pred_data$Four_4+ pred_data$Five_5
+  
+  pred_data$Wk <- i
+  
+  final_pred <- rbind(final_pred, pred_data)
+}
+
+write_csv(final_pred, "LaLiga_2017_2018_Pred_RF.csv")
+
+
+final_pred <- tibble()
+
+for (i in 5:38){
+  data <- LaLiga_18_19 %>% filter(Wk < i)
+  data[is.na(data)] <- 0
+  
+  pred_data <- LaLiga_18_19 %>% filter(Wk == i)
+  pred_data[is.na(pred_data)] <- 0
+  
+  homedata <- data %>% group_by(Home) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  awaydata <- data %>% group_by(Away) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  homeregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  homegoalreg <- randomForest(HomeGoals ~ .,homeregdata)
+  homedata$HomePred <- predict(homegoalreg, homedata)
+  homedata$HomePred <- ifelse(homedata$HomePred < 0, 0, homedata$HomePred)
+
+  awayregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  awaygoalreg <- randomForest(AwayGoals ~ .,awayregdata)
+  awaydata$AwayPred <- predict(awaygoalreg, awaydata)
+  awaydata$AwayPred <- ifelse(awaydata$AwayPred < 0, 0, awaydata$AwayPred)
+
+  pred_data <- merge(pred_data, homedata, by="Home", all.x=TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred))
+  pred_data <- merge(pred_data, awaydata, by="Away", all = TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred, AwayPred))
+
+  pred_data$Zero_0 <- dpois(0, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Zero_1 <- dpois(0, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Zero_2 <- dpois(0, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Zero_3 <- dpois(0, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Zero_4 <- dpois(0, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Zero_5 <- dpois(0, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$One_0 <- dpois(1, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$One_1 <- dpois(1, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$One_2 <- dpois(1, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$One_3 <- dpois(1, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$One_4 <- dpois(1, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$One_5 <- dpois(1, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Two_0 <- dpois(2, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Two_1 <- dpois(2, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Two_2 <- dpois(2, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Two_3 <- dpois(2, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Two_4 <- dpois(2, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Two_5 <- dpois(2, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Three_0 <- dpois(3, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Three_1 <- dpois(3, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Three_2 <- dpois(3, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Three_3 <- dpois(3, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Three_4 <- dpois(3, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Three_5 <- dpois(3, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Four_0 <- dpois(4, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Four_1 <- dpois(4, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Four_2 <- dpois(4, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Four_3 <- dpois(4, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Four_4 <- dpois(4, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Four_5 <- dpois(4, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Five_0 <- dpois(5, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Five_1 <- dpois(5, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Five_2 <- dpois(5, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Five_3 <- dpois(5, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Five_4 <- dpois(5, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Five_5 <- dpois(5, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$HomeWinProb <- pred_data$One_0+ pred_data$Two_0+ pred_data$Two_1+ pred_data$Three_0+ pred_data$Three_1+ pred_data$Three_2+ pred_data$Four_0+ pred_data$Four_1+ pred_data$Four_2+ pred_data$Four_3+ pred_data$Five_0+ pred_data$Five_1+ pred_data$Five_2+ pred_data$Five_3+ pred_data$Five_4
+  
+  pred_data$AwayWinProb <- pred_data$Zero_1+ pred_data$Zero_2+ pred_data$Zero_3+ pred_data$Zero_4+ pred_data$Zero_5+ pred_data$One_2+ pred_data$One_3+ pred_data$One_4+ pred_data$One_5+ pred_data$Two_3+ pred_data$Two_4+ pred_data$Two_5+ pred_data$Three_4+ pred_data$Three_5+ pred_data$Four_5
+  
+  pred_data$DrawProb <- pred_data$Zero_0+ pred_data$One_1+ pred_data$Two_2+ pred_data$Three_3+ pred_data$Four_4+ pred_data$Five_5
+  
+  pred_data$Wk <- i
+  
+  final_pred <- rbind(final_pred, pred_data)
+}
+
+write_csv(final_pred, "LaLiga_2018_2019_Pred_RF.csv")
+
+
+final_pred <- tibble()
+
+for (i in 5:38){
+  data <- Ligue1_17_18 %>% filter(Wk < i)
+  data[is.na(data)] <- 0
+  
+  pred_data <- Ligue1_17_18 %>% filter(Wk == i)
+  pred_data[is.na(pred_data)] <- 0
+  
+  homedata <- data %>% group_by(Home) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  awaydata <- data %>% group_by(Away) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  homeregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  homegoalreg <- randomForest(HomeGoals ~ .,homeregdata)
+  homedata$HomePred <- predict(homegoalreg, homedata)
+  homedata$HomePred <- ifelse(homedata$HomePred < 0, 0, homedata$HomePred)
+
+  awayregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  awaygoalreg <- randomForest(AwayGoals ~ .,awayregdata)
+  awaydata$AwayPred <- predict(awaygoalreg, awaydata)
+  awaydata$AwayPred <- ifelse(awaydata$AwayPred < 0, 0, awaydata$AwayPred)
+
+  pred_data <- merge(pred_data, homedata, by="Home", all.x=TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred))
+  pred_data <- merge(pred_data, awaydata, by="Away", all = TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred, AwayPred))
+
+  pred_data$Zero_0 <- dpois(0, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Zero_1 <- dpois(0, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Zero_2 <- dpois(0, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Zero_3 <- dpois(0, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Zero_4 <- dpois(0, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Zero_5 <- dpois(0, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$One_0 <- dpois(1, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$One_1 <- dpois(1, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$One_2 <- dpois(1, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$One_3 <- dpois(1, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$One_4 <- dpois(1, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$One_5 <- dpois(1, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Two_0 <- dpois(2, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Two_1 <- dpois(2, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Two_2 <- dpois(2, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Two_3 <- dpois(2, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Two_4 <- dpois(2, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Two_5 <- dpois(2, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Three_0 <- dpois(3, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Three_1 <- dpois(3, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Three_2 <- dpois(3, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Three_3 <- dpois(3, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Three_4 <- dpois(3, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Three_5 <- dpois(3, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Four_0 <- dpois(4, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Four_1 <- dpois(4, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Four_2 <- dpois(4, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Four_3 <- dpois(4, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Four_4 <- dpois(4, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Four_5 <- dpois(4, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Five_0 <- dpois(5, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Five_1 <- dpois(5, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Five_2 <- dpois(5, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Five_3 <- dpois(5, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Five_4 <- dpois(5, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Five_5 <- dpois(5, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$HomeWinProb <- pred_data$One_0+ pred_data$Two_0+ pred_data$Two_1+ pred_data$Three_0+ pred_data$Three_1+ pred_data$Three_2+ pred_data$Four_0+ pred_data$Four_1+ pred_data$Four_2+ pred_data$Four_3+ pred_data$Five_0+ pred_data$Five_1+ pred_data$Five_2+ pred_data$Five_3+ pred_data$Five_4
+  
+  pred_data$AwayWinProb <- pred_data$Zero_1+ pred_data$Zero_2+ pred_data$Zero_3+ pred_data$Zero_4+ pred_data$Zero_5+ pred_data$One_2+ pred_data$One_3+ pred_data$One_4+ pred_data$One_5+ pred_data$Two_3+ pred_data$Two_4+ pred_data$Two_5+ pred_data$Three_4+ pred_data$Three_5+ pred_data$Four_5
+  
+  pred_data$DrawProb <- pred_data$Zero_0+ pred_data$One_1+ pred_data$Two_2+ pred_data$Three_3+ pred_data$Four_4+ pred_data$Five_5
+  
+  pred_data$Wk <- i
+  
+  final_pred <- rbind(final_pred, pred_data)
+}
+
+write_csv(final_pred, "Ligue1_2017_2018_Pred_RF.csv")
+
+
+final_pred <- tibble()
+
+for (i in 5:38){
+  data <- Ligue1_18_19 %>% filter(Wk < i)
+  data[is.na(data)] <- 0
+  
+  pred_data <- Ligue1_18_19 %>% filter(Wk == i)
+  pred_data[is.na(pred_data)] <- 0
+  
+  homedata <- data %>% group_by(Home) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  awaydata <- data %>% group_by(Away) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  homeregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  homegoalreg <- randomForest(HomeGoals ~ .,homeregdata)
+  homedata$HomePred <- predict(homegoalreg, homedata)
+  homedata$HomePred <- ifelse(homedata$HomePred < 0, 0, homedata$HomePred)
+
+  awayregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  awaygoalreg <- randomForest(AwayGoals ~ .,awayregdata)
+  awaydata$AwayPred <- predict(awaygoalreg, awaydata)
+  awaydata$AwayPred <- ifelse(awaydata$AwayPred < 0, 0, awaydata$AwayPred)
+
+  pred_data <- merge(pred_data, homedata, by="Home", all.x=TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred))
+  pred_data <- merge(pred_data, awaydata, by="Away", all = TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred, AwayPred))
+
+  pred_data$Zero_0 <- dpois(0, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Zero_1 <- dpois(0, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Zero_2 <- dpois(0, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Zero_3 <- dpois(0, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Zero_4 <- dpois(0, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Zero_5 <- dpois(0, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$One_0 <- dpois(1, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$One_1 <- dpois(1, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$One_2 <- dpois(1, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$One_3 <- dpois(1, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$One_4 <- dpois(1, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$One_5 <- dpois(1, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Two_0 <- dpois(2, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Two_1 <- dpois(2, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Two_2 <- dpois(2, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Two_3 <- dpois(2, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Two_4 <- dpois(2, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Two_5 <- dpois(2, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Three_0 <- dpois(3, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Three_1 <- dpois(3, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Three_2 <- dpois(3, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Three_3 <- dpois(3, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Three_4 <- dpois(3, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Three_5 <- dpois(3, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Four_0 <- dpois(4, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Four_1 <- dpois(4, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Four_2 <- dpois(4, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Four_3 <- dpois(4, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Four_4 <- dpois(4, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Four_5 <- dpois(4, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Five_0 <- dpois(5, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Five_1 <- dpois(5, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Five_2 <- dpois(5, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Five_3 <- dpois(5, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Five_4 <- dpois(5, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Five_5 <- dpois(5, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$HomeWinProb <- pred_data$One_0+ pred_data$Two_0+ pred_data$Two_1+ pred_data$Three_0+ pred_data$Three_1+ pred_data$Three_2+ pred_data$Four_0+ pred_data$Four_1+ pred_data$Four_2+ pred_data$Four_3+ pred_data$Five_0+ pred_data$Five_1+ pred_data$Five_2+ pred_data$Five_3+ pred_data$Five_4
+  
+  pred_data$AwayWinProb <- pred_data$Zero_1+ pred_data$Zero_2+ pred_data$Zero_3+ pred_data$Zero_4+ pred_data$Zero_5+ pred_data$One_2+ pred_data$One_3+ pred_data$One_4+ pred_data$One_5+ pred_data$Two_3+ pred_data$Two_4+ pred_data$Two_5+ pred_data$Three_4+ pred_data$Three_5+ pred_data$Four_5
+  
+  pred_data$DrawProb <- pred_data$Zero_0+ pred_data$One_1+ pred_data$Two_2+ pred_data$Three_3+ pred_data$Four_4+ pred_data$Five_5
+  
+  pred_data$Wk <- i
+  
+  final_pred <- rbind(final_pred, pred_data)
+}
+
+write_csv(final_pred, "Ligue1_2018_2019_Pred_RF.csv")
+
+
+final_pred <- tibble()
+
+for (i in 5:38){
+  data <- SerieA_17_18 %>% filter(Wk < i)
+  data[is.na(data)] <- 0
+  
+  pred_data <- SerieA_17_18 %>% filter(Wk == i)
+  pred_data[is.na(pred_data)] <- 0
+  
+  homedata <- data %>% group_by(Home) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  awaydata <- data %>% group_by(Away) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  homeregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  homegoalreg <- randomForest(HomeGoals ~ .,homeregdata)
+  homedata$HomePred <- predict(homegoalreg, homedata)
+  homedata$HomePred <- ifelse(homedata$HomePred < 0, 0, homedata$HomePred)
+
+  awayregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  awaygoalreg <- randomForest(AwayGoals ~ .,awayregdata)
+  awaydata$AwayPred <- predict(awaygoalreg, awaydata)
+  awaydata$AwayPred <- ifelse(awaydata$AwayPred < 0, 0, awaydata$AwayPred)
+
+  pred_data <- merge(pred_data, homedata, by="Home", all.x=TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred))
+  pred_data <- merge(pred_data, awaydata, by="Away", all = TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred, AwayPred))
+
+  pred_data$Zero_0 <- dpois(0, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Zero_1 <- dpois(0, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Zero_2 <- dpois(0, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Zero_3 <- dpois(0, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Zero_4 <- dpois(0, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Zero_5 <- dpois(0, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$One_0 <- dpois(1, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$One_1 <- dpois(1, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$One_2 <- dpois(1, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$One_3 <- dpois(1, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$One_4 <- dpois(1, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$One_5 <- dpois(1, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Two_0 <- dpois(2, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Two_1 <- dpois(2, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Two_2 <- dpois(2, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Two_3 <- dpois(2, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Two_4 <- dpois(2, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Two_5 <- dpois(2, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Three_0 <- dpois(3, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Three_1 <- dpois(3, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Three_2 <- dpois(3, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Three_3 <- dpois(3, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Three_4 <- dpois(3, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Three_5 <- dpois(3, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Four_0 <- dpois(4, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Four_1 <- dpois(4, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Four_2 <- dpois(4, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Four_3 <- dpois(4, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Four_4 <- dpois(4, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Four_5 <- dpois(4, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Five_0 <- dpois(5, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Five_1 <- dpois(5, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Five_2 <- dpois(5, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Five_3 <- dpois(5, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Five_4 <- dpois(5, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Five_5 <- dpois(5, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$HomeWinProb <- pred_data$One_0+ pred_data$Two_0+ pred_data$Two_1+ pred_data$Three_0+ pred_data$Three_1+ pred_data$Three_2+ pred_data$Four_0+ pred_data$Four_1+ pred_data$Four_2+ pred_data$Four_3+ pred_data$Five_0+ pred_data$Five_1+ pred_data$Five_2+ pred_data$Five_3+ pred_data$Five_4
+  
+  pred_data$AwayWinProb <- pred_data$Zero_1+ pred_data$Zero_2+ pred_data$Zero_3+ pred_data$Zero_4+ pred_data$Zero_5+ pred_data$One_2+ pred_data$One_3+ pred_data$One_4+ pred_data$One_5+ pred_data$Two_3+ pred_data$Two_4+ pred_data$Two_5+ pred_data$Three_4+ pred_data$Three_5+ pred_data$Four_5
+  
+  pred_data$DrawProb <- pred_data$Zero_0+ pred_data$One_1+ pred_data$Two_2+ pred_data$Three_3+ pred_data$Four_4+ pred_data$Five_5
+  
+  pred_data$Wk <- i
+  
+  final_pred <- rbind(final_pred, pred_data)
+}
+write_csv(final_pred, "SerieA_2017_2018_Pred_RF.csv")
+
+
+final_pred <- tibble()
+
+for (i in 5:38){
+  data <- SerieA_18_19 %>% filter(Wk < i)
+  data[is.na(data)] <- 0
+  
+  pred_data <- SerieA_18_19 %>% filter(Wk == i)
+  pred_data[is.na(pred_data)] <- 0
+  
+  homedata <- data %>% group_by(Home) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  awaydata <- data %>% group_by(Away) %>% summarise(HomeGoals = mean(HomeGoals), AwayGoals = mean(AwayGoals), HomeShots = mean(HomeShots), AwayShots = mean(AwayShots), HomeShotsOnTarget = mean(HomeShotsOnTarget), AwayShotsOnTarget = mean(AwayShotsOnTarget), HomeFouls = mean(HomeFouls), AwayFouls = mean(AwayFouls), HomeCorners = mean(HomeCorners), AwayCorners = mean(AwayCorners), HomeYellow = mean(HomeYellow), AwayYellow = mean(AwayYellow), HomeRed = mean(HomeRed), AwayRed = mean(AwayRed))
+  
+  homeregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  homegoalreg <- randomForest(HomeGoals ~ .,homeregdata)
+  homedata$HomePred <- predict(homegoalreg, homedata)
+  homedata$HomePred <- ifelse(homedata$HomePred < 0, 0, homedata$HomePred)
+
+  awayregdata <- data %>% select(-c(Wk, FTR, Home, Away, B365A, B365H, B365D))
+  awaygoalreg <- randomForest(AwayGoals ~ .,awayregdata)
+  awaydata$AwayPred <- predict(awaygoalreg, awaydata)
+  awaydata$AwayPred <- ifelse(awaydata$AwayPred < 0, 0, awaydata$AwayPred)
+
+  pred_data <- merge(pred_data, homedata, by="Home", all.x=TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred))
+  pred_data <- merge(pred_data, awaydata, by="Away", all = TRUE)
+  pred_data <- pred_data %>% select(c(Home, Away, HomePred, AwayPred))
+
+  pred_data$Zero_0 <- dpois(0, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Zero_1 <- dpois(0, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Zero_2 <- dpois(0, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Zero_3 <- dpois(0, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Zero_4 <- dpois(0, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Zero_5 <- dpois(0, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$One_0 <- dpois(1, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$One_1 <- dpois(1, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$One_2 <- dpois(1, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$One_3 <- dpois(1, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$One_4 <- dpois(1, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$One_5 <- dpois(1, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Two_0 <- dpois(2, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Two_1 <- dpois(2, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Two_2 <- dpois(2, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Two_3 <- dpois(2, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Two_4 <- dpois(2, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Two_5 <- dpois(2, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Three_0 <- dpois(3, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Three_1 <- dpois(3, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Three_2 <- dpois(3, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Three_3 <- dpois(3, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Three_4 <- dpois(3, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Three_5 <- dpois(3, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Four_0 <- dpois(4, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Four_1 <- dpois(4, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Four_2 <- dpois(4, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Four_3 <- dpois(4, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Four_4 <- dpois(4, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Four_5 <- dpois(4, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$Five_0 <- dpois(5, pred_data$HomePred)*dpois(0, pred_data$AwayPred)
+  pred_data$Five_1 <- dpois(5, pred_data$HomePred)*dpois(1, pred_data$AwayPred)
+  pred_data$Five_2 <- dpois(5, pred_data$HomePred)*dpois(2, pred_data$AwayPred)
+  pred_data$Five_3 <- dpois(5, pred_data$HomePred)*dpois(3, pred_data$AwayPred)
+  pred_data$Five_4 <- dpois(5, pred_data$HomePred)*dpois(4, pred_data$AwayPred)
+  pred_data$Five_5 <- dpois(5, pred_data$HomePred)*dpois(5, pred_data$AwayPred)
+  
+  pred_data$HomeWinProb <- pred_data$One_0+ pred_data$Two_0+ pred_data$Two_1+ pred_data$Three_0+ pred_data$Three_1+ pred_data$Three_2+ pred_data$Four_0+ pred_data$Four_1+ pred_data$Four_2+ pred_data$Four_3+ pred_data$Five_0+ pred_data$Five_1+ pred_data$Five_2+ pred_data$Five_3+ pred_data$Five_4
+  
+  pred_data$AwayWinProb <- pred_data$Zero_1+ pred_data$Zero_2+ pred_data$Zero_3+ pred_data$Zero_4+ pred_data$Zero_5+ pred_data$One_2+ pred_data$One_3+ pred_data$One_4+ pred_data$One_5+ pred_data$Two_3+ pred_data$Two_4+ pred_data$Two_5+ pred_data$Three_4+ pred_data$Three_5+ pred_data$Four_5
+  
+  pred_data$DrawProb <- pred_data$Zero_0+ pred_data$One_1+ pred_data$Two_2+ pred_data$Three_3+ pred_data$Four_4+ pred_data$Five_5
+  
+  pred_data$Wk <- i
+  
+  final_pred <- rbind(final_pred, pred_data)
+}
+
+write_csv(final_pred, "SerieA_2018_2019_Pred_RF.csv")
+```
+
